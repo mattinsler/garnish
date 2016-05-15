@@ -46,4 +46,34 @@ describe('memoize', () => {
     expect(foo.baz).toHaveBeenCalledTimes(1);
     expect(foo2.baz).toHaveBeenCalledTimes(1);
   });
+
+  it('should memoize methods independently', () => {
+    class Foo {
+      @memoize
+      bar() {
+        this.baz();
+      }
+      baz() {}
+      @memoize
+      flim() {
+        this.flam();
+      }
+      flam() {}
+    }
+
+    const foo = new Foo();
+
+    spyOn(foo, 'baz');
+    spyOn(foo, 'flam');
+
+    foo.bar();
+    foo.bar();
+    foo.bar();
+    foo.flim();
+    foo.flim();
+    foo.flim();
+
+    expect(foo.baz).toHaveBeenCalledTimes(1);
+    expect(foo.flam).toHaveBeenCalledTimes(1);
+  });
 });

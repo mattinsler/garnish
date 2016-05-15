@@ -4,7 +4,7 @@ function decorate(decorateFn) {
       configurable,
       enumerable,
       writable,
-      value: decorateFn(target[key])
+      value: decorateFn(target[key], target, key)
     };
   };
 }
