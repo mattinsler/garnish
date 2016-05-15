@@ -1,15 +1,23 @@
 import decorate from '../lib/decorate';
 
+const MEMOIZE = Symbol('memoize');
+
 const memoize = decorate(function(fn) {
   if (fn.length > 0) {
     throw new Error('Cannot memoize functions with arguments');
   }
 
-  let memoizedValue;
-
   return function() {
-    if (!memoizedValue) { memoizedValue = fn.call(this) }
-    return memoizedValue;
+    const state = this[MEMOIZE] = this[MEMOIZE] || {
+      called: false,
+      value: undefined
+    };
+
+    if (!state.called) {
+      state.called = true;
+      state.value = fn.call(this);
+    }
+    return state.value;
   }
 });
 
