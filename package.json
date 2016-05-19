@@ -1,6 +1,6 @@
 {
   "name": "@mattinsler/garnish",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "",
   "keywords": [],
   "homepage": "https://github.com/mattinsler/garnish",
@@ -14,7 +14,7 @@
   "scripts": {
     "build": "rm -rf lib; babel src -d lib --source-maps inline",
     "prepublish": "npm run build",
-    "test": "jasmine JASMINE_CONFIG_PATH=test/support/jasmine.json"
+    "test": "JASMINE_CONFIG_PATH=test/support/jasmine.json jasmine"
   },
   "dependencies": {},
   "devDependencies": {

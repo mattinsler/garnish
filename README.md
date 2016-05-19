@@ -72,3 +72,34 @@ class User {
   }
 }
 ```
+
+#### @view(viewConfigObject)
+
+Mutates fields in the return object according to the viewConfigObject. This will
+work for return values that are plain objects or promises that return plain objects.
+
+There are 4 types of operations that you can use with the `@view` decorator.
+
+- **Copy**: `{ 'to-key': 'from-key' }`
+- **Rename**: `{ 'to-key': '!from-key' }`
+- **Delete**: `{ key: 0 }` or `{ key: false }`
+- **Compute**: `{ key: (object) => object.foo.bar * 3 }`
+
+You can use any combination of operations in a single declaration. You can also
+specify nested objects using `.` as a delimiter in either the key or value.
+
+```javascript
+import { view } from '@mattinsler/garnish'
+
+class User {
+  @view({
+    id: '!_id',      // rename _id to id
+    password: false  // delete password
+    name: (user) => `${user.firstName} ${user.lastName}`, // compute name
+    'accounts.github': 'github'  // copy { github } to { accounts: { github }}
+  })
+  findOne(query) {
+    return UserModel.findOne(query);
+  }
+}
+```
