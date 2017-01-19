@@ -2,15 +2,20 @@ import applyTransform from '../lib/apply-transform';
 import decorateMethod from '../lib/decorate-method';
 
 function omit(...fields) {
-  return decorateMethod(
-    async (fn, ...args) => {
-      let value = fn(...args);
-      if (typeof(value.then) === 'function') { value = await value }
+  function transformItem(item) {
+    for (const f of fields) { delete item[f] }
+    return item;
+  }
 
-      return applyTransform(value, (item) => {
-        for (const f of fields) { delete item[f] }
-        return item;
-      });
+  return decorateMethod(
+    (fn, ...args) => {
+      const value = fn(...args);
+      
+      if (typeof(value.then) === 'function') {
+        return value.then(v => applyTransform(v, transformItem));
+      } else {
+        return applyTransform(value, transformItem);
+      }
     }
   )
 }

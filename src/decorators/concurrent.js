@@ -4,17 +4,23 @@ function concurrent(maxConcurrentlyRunning = 1) {
   let numRunning = 0;
 
   return decorateMethod(
-    async (fn, ...args) => {
+    (fn, ...args) => {
       if (numRunning >= maxConcurrentlyRunning) {
         throw new Error(`Method can only be called ${maxConcurrentlyRunning} time(s) concurrently`);
       }
 
       ++numRunning;
-      let value = fn(...args);
-      if (typeof(value.then) === 'function') { value = await value }
-      --numRunning;
+      const value = fn(...args);
 
-      return value;
+      if (typeof(value.then) === 'function') {
+        value.then(v => {
+          --numRunning;
+          return v;
+        });
+      } else {
+        --numRunning;
+        return value;
+      }
     }
   )
 }

@@ -94,20 +94,21 @@ function view(viewProjection = {}) {
 
   return decorateMethod(
     (fn, ...args) => {
-      const value = fn(...args);
-      const transform = (item) => {
+      function transformItem(item) {
         if (item) {
           for (const t of transforms) {
             item = t.type(item, t.key, t.value, args);
           }
         }
         return item;
-      };
+      }
 
+      const value = fn(...args);
+      
       if (typeof(value.then) === 'function') {
-        return value.then((v) => applyTransform(v, transform));
+        return value.then(v => applyTransform(v, transformItem));
       } else {
-        return applyTransform(value, transform);
+        return applyTransform(value, transformItem);
       }
     }
   )
